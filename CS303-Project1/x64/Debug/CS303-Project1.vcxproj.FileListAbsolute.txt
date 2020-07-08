@@ -1,0 +1,2 @@
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\x64\Debug\CS303-Project1.exe
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\x64\Debug\CS303-Project1.pdb

@@ -1,0 +1,6 @@
+﻿  Evaluator.cpp
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\Evaluator.h(20,20): warning C4200: nonstandard extension used: zero-sized array in struct/union
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\Evaluator.h(20,20): message : This member will be ignored by a defaulted constructor or copy/move assignment operator
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\Evaluator.cpp(191,13): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\Evaluator.cpp(257): warning C4715: 'Evaluator::TheMath': not all control paths return a value
+  CS303-Project1.vcxproj -> C:\Users\aaeil\OneDrive - University of Missouri\Summer 2020\CompSci 303\Project 1\CS303-Project1\CS303-Project1\x64\Debug\CS303-Project1.exe

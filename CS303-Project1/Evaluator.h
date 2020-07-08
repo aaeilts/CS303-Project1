@@ -1,18 +1,22 @@
 #include <stack>
 #include <string>
-#include <vector>
+
 
 using namespace std;
 
-class Evaluator{
+class Evaluator {
 public:
 	Evaluator();
-	stack <int> GetOperand();
-	stack <string> GetOperator();
-	void CompareOperator();
-
-private:
+	Evaluator(string expression);
+	stack <int> GetOperands();
+	stack <char> GetOperators();
+	int GetPrecedence(char compOp);
+	void CleanExpression(string expression);
+	int Calculate(string expression);
+	int StackEmUp(string expression);
+	int TheMath(int left, int right, char opert);
 	stack <int> operands;
-	stack <string> operators;
-	const vector <int>  precenedence;
+	stack <char> operators;
+	char  precedence[];
+
 };
