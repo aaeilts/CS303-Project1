@@ -5,24 +5,26 @@ using namespace std;
 
 Evaluator::Evaluator() {
 }
-
 Evaluator::Evaluator(string exp) {
 	string expression = exp;
 	//char precedence[] = { '!', 'i', 'd', '-', '^', '*', '/', '%', '+', '>', 'g', '<', 'l', 'e', 'n', 'a', 'o' };
 }
 
-stack <int> Evaluator::GetOperands() {
-	return this->operands;
-}
-
-stack <char> Evaluator::GetOperators() {
-	return this->operators;
-}
-
 //checks if char is in list of operators
 int Evaluator::isOperator(char symbol) {
+	int i;
 
-	switch (symbol) {
+	if ((symbol == '!') || (symbol == 'i') || (symbol == 'd') || (symbol == '-') || (symbol == '*') || (symbol == '^') || (symbol == '/') || (symbol == '%') || (symbol == '+') || (symbol == '>') || (symbol == '<') || (symbol == 'g') || (symbol == 'l') || (symbol == 'e') || (symbol == 'n') || (symbol == 'a') || (symbol == 'o')) {
+		i = 1;
+	}
+	else {
+		i = 0;
+	}
+	return i;
+
+
+
+	/*switch (symbol) {
 	case '!':
 	case 'i':
 	case 'd':
@@ -40,13 +42,13 @@ int Evaluator::isOperator(char symbol) {
 	case 'n':
 	case 'a':
 	case 'o':
-	case ')':
-	case '(':
-		return 1;
+		i = 1;
 		break;
 	default:
-		return 0;
+		i = 0;
 	}
+	cout << i << endl;
+	return i;*/
 }
 
 //gets precedence of operator
@@ -67,7 +69,7 @@ int Evaluator::GetPrecedence(char compOp) {
 	case '%':
 		return 6;
 		break;
-	case '+': //negative would also go here? start expression with 0 to make use neg
+	case '+': 
 		return 5;
 		break;
 	case '>':
@@ -92,9 +94,7 @@ int Evaluator::GetPrecedence(char compOp) {
 }
 
 //removes, whitespace, looks for errors, changes double char operators to short hand
-void Evaluator::CleanExpression(string expression) {
-	//Check for # space # error
-	//FIX ME FIX CHAR IF NOT IN ARRAY TO SAY ERROR
+void Evaluator::CleanExpression(string& expression) {
 	expression.erase(remove_if(expression.begin(), expression.end(), isspace), expression.end());
 	for (int i = 0; i < expression.size() - 1; i++) {
 		if (expression.at(i) == expression.at(i + 1)) {
@@ -126,88 +126,106 @@ void Evaluator::CleanExpression(string expression) {
 			}
 		}
 	}
-	//FIX ME EXIT PROGRAM WITH ERROR
+	int b = 0;
 	try {
 		if (expression.at(0) == ')') {
-			cout << "Expression cannot start with a closing parenthesis @ char: 0" << endl;
+		throw runtime_error("Expression cannot start with a closing parenthesis @ char: 0");
 		}
 		else if ((expression.at(0) == '>') || (expression.at(0) == '<') || (expression.at(0) == 'g') || (expression.at(0) == 'l') || (expression.at(0) == 'e') || (expression.at(0) == 'n') || (expression.at(0) == 'a') || (expression.at(0) == 'o')) {
-			cout << "Expression cannot start with a binary operator @ char: 0" << endl;
+			throw runtime_error("Expression cannot start with a binary operator @ char: 0");
 		}
 		for (int i = 0; i < expression.size() - 1; i++) {
 			if (expression.at(i) == expression.at(i + 1)) {
 				if ((expression.at(i) == '>') || (expression.at(i) == '<') || (expression.at(i) == 'g') || (expression.at(i) == 'l') || (expression.at(i) == 'e') || (expression.at(i) == 'n') || (expression.at(i) == 'a') || (expression.at(i) == 'o')) {
-					cout << "Two binary operators in a row @ char: " << i + 1 << endl;
+					b = i;
+					throw runtime_error("Two binary operators in a row @ char: FIXME");
 				}
 			}
 			if ((expression.at(i) == '/') && (expression.at(i + 1) == '0')) {
-				cout << "Division by zero @ char: " << i + 1 << endl;
+				b = i;
+				throw runtime_error("Division by zero @ char: FIXME");
 			}
 		}
 	}
-	catch(){
-
-	}
-	
-	cout << "TEST: " << expression; //TEST 
+	catch(runtime_error & excpt){
+		cout << excpt.what() << endl;
+		exit(EXIT_FAILURE);
+	} 
 }
 
 //converts infix expression to postfix expression
-void Evaluator::converter(string expression) {
+void Evaluator::Converter(string& expression) {
 	string post = "";
 	char symbol;
+	int ops;
 	for (int i = 0; i < expression.length(); i++) {
+		ops = isOperator(expression.at(i));
 		if (isdigit(expression.at(i))) {
-			post.append(expression.at(i));
+			post += expression.at(i);
+			//cout << post << endl;
 		}
-		else if (expression.at(i) == '(') {
+		//this is where we didnt understand the parentheses situation. we got so far but couldnt get them to delete out of the stack.
+		/*else if (expression.at(i) == '(') {
 			this->operators.push(expression.at(i));
 		}
 		else if (expression.at(i) == ')') {
 			while ((expression.length() != 0) && (operators.top() != '(')) {
 				symbol = operators.top();
 				operators.pop();
-				post.append(symbol);
+				post += symbol;
 			}
-		}
-		else if (isOperator(expression.at(i) == 1)) {
-			if ((operators.empty() == True) || (operators.top() == '(')) {
+		}*/
+		else if(ops == 1) {
+
+			if (operators.empty()){
 				this->operators.push(expression.at(i));
 			}
-			else {
-				while ((expression.length() != 0) && (operators.top() != '(') && (GetPrecedence(expression.at(i)) <= (GetPrecedence(operators.top())))) {
+			else{
+				while (!operators.empty()) {
+					if (GetPrecedence(expression.at(i)) <= GetPrecedence(operators.top())){
 					symbol = operators.top();
 					operators.pop();
-					post.append(symbol);
+					post += symbol;
+					this->operators.push(expression.at(i));
+					break;
+					}
+					else {
+						this->operators.push(expression.at(i));
+						break;
+					}
 				}
 			}
 		}
 	}
-	while (expression.length() != 0) {
+	while (!operators.empty()) {
 		symbol = operators.top();
 		operators.pop();
-		post.append(symbol);
+		post += symbol;
 	}
 	expression = post;
 }
 
 //evaluates the postfix expression
-int Evaluator::EvalExpression(string expression) {
-	int a, b, c, result;
+int Evaluator::EvalExpression(string& expression) {
+	int a, b, c, result, temp;
+	char x;
 	for (int i = 0; i < expression.length(); i++) {
 		if (isdigit(expression.at(i))) {
-			this->operands.push(expression.at(i));
+			x = expression.at(i);
+			temp = x - 48;
+			this->operands.push(temp);
 		}
-		else if (isOperator(expression.at(i))) {
+		else {
 			a = operands.top();
 			operands.pop();
 			b = operands.top();
 			operands.pop();
-			c = TheMath(a, b, expression.at(i));
+			c = TheMath(b, a, expression.at(i));
 			this->operands.push(c);
 		}
 	}
 	result = operands.top();
+	return result;
 }
 
 //evaluates the mathmatical value of the two numbers and the operator
@@ -238,59 +256,59 @@ int Evaluator::TheMath(int left, int right, char opert) {
 		return left + right;
 	case '>':
 		if (left > right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'g': 
 		if (left >= right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case '<': 
 		if (left < right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'l': 
 		if (left <= right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'e': 
 		if (left == right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'n': 
 		if (left != right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'a': 
 		if (left && right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	case 'o':
 		if (left || right) {
-			return 0;
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	}
 }
@@ -298,70 +316,6 @@ int Evaluator::TheMath(int left, int right, char opert) {
 //runs the expression through the proper functions
 int Evaluator::Calculate(string expression) {
 	this->CleanExpression(expression);
-	this->converter(expression);
+	this->Converter(expression);
 	return this->EvalExpression(expression);
 };
-
-
-
-
-
-//would no longer need
-int Evaluator::StackEmUp(string expression) {
-	int left, right;
-	char symbol;
-	while (expression.length() != 0) {
-		for (int i = 0; i < expression.length(); i++) {
-			//if a number
-			if (isdigit(expression.at(i))) {
-				this->operands.push(expression.at(i));
-			}
-			//if a operator symbol
-			else if (isOperator(expression.at(i)) == 1) {
-
-			}
-			if (expression.at(i) == '(') {
-				this->operators.push(expression.at(i));
-			}
-			else if (expression.at(i) == ')') {
-				this->operators.push(expression.at(i));
-			}
-			while (operators.top() != '(') {
-				symbol = operators.top();
-				operators.pop();
-				right = operands.top();
-				operands.pop();
-				left = operands.top();
-				operands.pop();
-				operands.push(TheMath(left, right, symbol));
-			}
-			//operators.pop();
-
-			while (!operators.empty()) {
-				char thisOp = operators.top();
-				while (GetPrecedence(thisOp) <= GetPrecedence(operators.top())) {
-					symbol = operators.top();
-					operators.pop();
-					left = operands.top();
-					operands.pop();
-					right = operands.top();
-					operands.pop();
-					operands.push(TheMath(left, right, symbol));
-					operators.push(thisOp);
-				}
-				//GetPrecedence(char) returns int value precedence
-			}
-		}
-	}
-	while (!operators.empty()) {
-		symbol = operators.top();
-		operators.pop();
-		left = operands.top();
-		operands.pop();
-		right = operands.top();
-		operands.pop();
-		operands.push(TheMath(left, right, symbol));
-	}
-	int result = operands.top();
-	return result;
-}
